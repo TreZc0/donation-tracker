@@ -83,11 +83,13 @@ def donate(request, event):
           for prizeform in prizesform:
             if 'prize' in prizeform.cleaned_data and prizeform.cleaned_data['prize']:
               prize = prizeform.cleaned_data['prize']
-              donation.tickets.add(models.PrizeTicket(prize=prize, amount=Decimal(prizeform.cleaned_data['amount'])))
+              donation.tickets.add(models.PrizeTicket(prize=prize, amount=Decimal(prizeform.cleaned_data['amount'])), bulk=False)
           donation.full_clean()
           donation.save()
 
         serverURL = viewutil.get_request_server_url(request)
+
+		print(serverURL + reverse('tracker:ipn'))
 
         paypal_dict = {
           "amount": str(donation.amount),
@@ -164,6 +166,8 @@ def donate(request, event):
 @never_cache
 def ipn(request):
   ipnObj = None
+
+  print("IPN POSTBACK")
 
   if request.method == 'GET' or len(request.POST) == 0:
     return views_common.tracker_response(request, "tracker/badobject.html", {})

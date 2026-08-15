@@ -1070,7 +1070,7 @@ class SpeedRunAdmin(EventArchivedMixin, CustomModelAdmin):
     ]
     readonly_fields = ('start_time', 'bids', 'original_estimate')
     actions = ['start_run']
-    inlines = (inlines.VideoLinkInline,)
+    inlines = (inlines.VideoLinkInline, inlines.ZSRRunMetadataInline)
 
     class Form(djforms.ModelForm):
         def clean(self):

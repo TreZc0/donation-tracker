@@ -29,7 +29,7 @@ class SpeedRunViewSet(
     TrackerFullViewSet,
 ):
     queryset = SpeedRun.objects.select_related(
-        'event', 'priority_tag'
+        'event', 'priority_tag', 'zsr_metadata'
     ).prefetch_related(
         'runners', 'hosts', 'commentators', 'video_links__link_type', 'tags'
     )

@@ -24,6 +24,7 @@ from tracker.models.mod_filter import AmountFilter, WordFilter
 from tracker.models.prize import DonorPrizeEntry, Prize, PrizeClaim, PrizeKey
 from tracker.models.profile import UserProfile
 from tracker.models.tag import AbstractTag, Tag
+from tracker.models.zsr import ZSRRunMetadata
 
 __all__ = [
     'Model',
@@ -57,4 +58,5 @@ __all__ = [
     'Interstitial',
     'AbstractTag',
     'Tag',
+    'ZSRRunMetadata',
 ]

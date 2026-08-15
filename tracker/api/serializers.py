@@ -24,7 +24,7 @@ from rest_framework.utils.model_meta import FieldInfo
 from rest_framework.validators import UniqueTogetherValidator
 
 from tracker.api import messages
-from tracker.models import Prize, Tag
+from tracker.models import Prize, Tag, ZSRRunMetadata
 from tracker.models.bid import Bid, DonationBid
 from tracker.models.country import Country, CountryRegion
 from tracker.models.donation import (
@@ -1061,6 +1061,55 @@ class VideoLinkSerializer(TrackerModelSerializer):
         )
 
 
+class ZSRRunMetadataSerializer(TrackerModelSerializer):
+    class Meta:
+        model = ZSRRunMetadata
+        fields = (
+            'short_name',
+            'layout_prefix',
+            'discord',
+            'commentary_layout',
+            'tracker_mode',
+            'chat_group',
+            'show_seeding',
+            'twitch_game',
+            'twitch_tags',
+            'youtube',
+            'custom_background',
+            'custom_cta',
+            'custom_channels',
+            'race_time',
+            'timer_notes',
+            'speedrun_com_slug',
+            'round',
+            'qualifier',
+            'qualifier_race_count',
+            'qualifier_max_races',
+            'max_runner_count',
+            'team_mode',
+            'team_time',
+            'use_team_timers',
+            'hide_timer',
+            'team_count',
+            'bracket',
+            'data_source',
+            'custom_background_hide_assets',
+            'logo_overlay',
+            'discord_module',
+            'tournament_module',
+            'tournament_slug',
+            'hint_list',
+            'racetime_bot',
+            'stats',
+            'title_template',
+            'custom_music',
+            'sniping_check',
+            'checklist',
+            'extra_info',
+            'face_cam',
+        )
+
+
 class SpeedRunSerializer(
     PrimaryOrNaturalKeyLookup,
     SerializerWithPermissionsMixin,
@@ -1077,6 +1126,7 @@ class SpeedRunSerializer(
         model=Tag, allow_null=True, required=False, allow_create=True
     )
     tags = AbstractTagField(model=Tag, many=True, required=False, allow_create=True)
+    zsr = ZSRRunMetadataSerializer(source='zsr_metadata', read_only=True)
 
     class Meta:
         model = SpeedRun
@@ -1108,6 +1158,7 @@ class SpeedRunSerializer(
             'video_links',
             'priority_tag',
             'tags',
+            'zsr',
         )
         nested_creates = ('video_links',)
         extra_kwargs = {

@@ -138,3 +138,9 @@ class DonorPrizeEntryInline(CustomStackedInline):
 class VideoLinkInline(CustomStackedInline):
     model = models.VideoLink
     extra = 1
+
+
+class ZSRRunMetadataInline(admin.StackedInline):
+    model = models.ZSRRunMetadata
+    extra = 0
+    max_num = 1

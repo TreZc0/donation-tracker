@@ -154,6 +154,51 @@ export function findParent(bids: Bid[], bid: Bid) {
   return bids.find(b => b.id === bid.parent);
 }
 
+export interface ZSRRunMetadata {
+  short_name: string;
+  layout_prefix: string;
+  discord: string;
+  commentary_layout: string;
+  tracker_mode: string;
+  chat_group: string;
+  show_seeding: boolean;
+  twitch_game: string;
+  twitch_tags: unknown[];
+  youtube: Record<string, unknown>;
+  custom_background: string;
+  custom_cta: string;
+  custom_channels: Record<string, unknown>;
+  race_time: string | null;
+  timer_notes: string;
+  speedrun_com_slug: string;
+  round: string;
+  qualifier: boolean;
+  qualifier_race_count: number;
+  qualifier_max_races: number;
+  max_runner_count: number;
+  team_mode: boolean;
+  team_time: string;
+  use_team_timers: boolean;
+  hide_timer: boolean;
+  team_count: number;
+  bracket: string;
+  data_source: string;
+  custom_background_hide_assets: boolean;
+  logo_overlay: string;
+  discord_module: string;
+  tournament_module: string;
+  tournament_slug: string;
+  hint_list: unknown[];
+  racetime_bot: boolean;
+  stats: Record<string, unknown>;
+  title_template: string;
+  custom_music: string;
+  sniping_check: boolean;
+  checklist: string;
+  extra_info: string;
+  face_cam: boolean;
+}
+
 export interface Run extends ModelBase {
   readonly type: 'speedrun';
   name: string;
@@ -181,6 +226,7 @@ export interface Run extends ModelBase {
   video_links: object[];
   priority_tag: null | string;
   tags: string[];
+  zsr: ZSRRunMetadata | null;
 }
 
 export function compareRun(a: Run, b: Run, nullFirst = false) {

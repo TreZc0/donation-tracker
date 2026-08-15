@@ -32,3 +32,4 @@ yarn-error.log
 
 # macOS generated configuration files for Finder.
 *.DS_Store
+.tmp

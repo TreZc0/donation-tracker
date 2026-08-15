@@ -31,6 +31,7 @@ export function getFixtureRun(overrides?: Partial<APIRun>): APIRun {
     video_links: [],
     priority_tag: null,
     tags: [],
+    zsr: null,
     ...overrides,
   };
 }

@@ -1,0 +1,168 @@
+/* ZSR's public tracker theme, based on the legacy fork's dark palette. */
+:root {
+  --zsr-background: #121212;
+  --zsr-surface: #1f1b24;
+  --zsr-surface-raised: #25222a;
+  --zsr-border: #45414b;
+  --zsr-text: #fff;
+  --zsr-text-muted: #b0aeba;
+  --zsr-blue: #42a5f5;
+  --zsr-blue-hover: #90caf9;
+  --zsr-indigo: #283593;
+  --zsr-indigo-border: #1a237e;
+  --zsr-indigo-light: #7986cb;
+  --zsr-indigo-hover: #5c6bc0;
+}
+
+html {
+  min-height: 100%;
+  background-color: var(--zsr-background);
+}
+
+body {
+  min-height: 100vh;
+  color: var(--zsr-text);
+  background-color: var(--zsr-background);
+  background-image: url("images/zsr-new-pattern.jpg");
+  background-position: top left;
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+a,
+.btn-link {
+  color: var(--zsr-blue);
+}
+
+a:focus,
+a:hover,
+.btn-link:focus,
+.btn-link:hover {
+  color: var(--zsr-blue-hover);
+}
+
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--zsr-blue);
+}
+
+.text-muted,
+.help-block {
+  color: var(--zsr-text-muted);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: rgba(31, 27, 36, 0.92);
+}
+
+.table-hover > tbody > tr:hover {
+  color: var(--zsr-text);
+  background-color: rgba(40, 53, 147, 0.72);
+}
+
+.table .table,
+.well,
+.panel,
+.list-group-item {
+  color: var(--zsr-text);
+  background-color: rgba(31, 27, 36, 0.94);
+  border-color: var(--zsr-border);
+}
+
+.panel-heading,
+.panel-footer {
+  color: var(--zsr-text);
+  background-color: rgba(37, 34, 42, 0.96);
+  border-color: var(--zsr-border);
+}
+
+.btn-default {
+  color: var(--zsr-text);
+  background-color: var(--zsr-indigo);
+  border-color: var(--zsr-indigo-border);
+}
+
+.btn-default:focus,
+.btn-default.focus,
+.btn-default:hover,
+.btn-default:active,
+.btn-default.active,
+.open > .dropdown-toggle.btn-default {
+  color: var(--zsr-text);
+  background-color: var(--zsr-indigo-hover);
+  border-color: var(--zsr-indigo-border);
+}
+
+.btn-info {
+  color: #111;
+  background-color: var(--zsr-indigo-light);
+  border-color: var(--zsr-indigo-border);
+}
+
+.btn-info:focus,
+.btn-info.focus,
+.btn-info:hover,
+.btn-info:active,
+.btn-info.active,
+.open > .dropdown-toggle.btn-info {
+  color: var(--zsr-text);
+  background-color: var(--zsr-indigo-hover);
+  border-color: var(--zsr-indigo-border);
+}
+
+.dropdown-menu,
+.pagination > li > a,
+.pagination > li > span,
+.pager li > a,
+.pager li > span {
+  color: var(--zsr-text);
+  background-color: var(--zsr-surface);
+  border-color: var(--zsr-border);
+}
+
+.dropdown-menu > li > a {
+  color: var(--zsr-text);
+}
+
+.dropdown-menu > li > a:focus,
+.dropdown-menu > li > a:hover,
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pager li > a:focus,
+.pager li > a:hover {
+  color: var(--zsr-text);
+  background-color: var(--zsr-indigo);
+}
+
+/* The modern React tracker uses variables defined by its ThemeProvider. */
+#container > div {
+  --brand-primary: var(--zsr-blue);
+  --background-primary: rgba(18, 18, 18, 0.94);
+  --background-secondary: rgba(31, 27, 36, 0.94);
+  --background-tertiary: rgba(37, 34, 42, 0.96);
+  --border-primary: 1px solid var(--zsr-blue);
+  --border-secondary: 1px solid var(--zsr-border);
+  --header-normal: var(--zsr-blue);
+  --header-muted: var(--zsr-text-muted);
+  --text-normal: var(--zsr-text);
+  --text-muted: var(--zsr-text-muted);
+  --text-link: var(--zsr-blue);
+  --text-inverted: #111;
+}
+
+@media print {
+  body {
+    color: #000;
+    background: #fff;
+  }
+}

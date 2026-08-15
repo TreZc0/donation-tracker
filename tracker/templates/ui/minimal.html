@@ -11,6 +11,7 @@
 
     <% _.forEach(htmlWebpackPlugin.files.js, function(file) { %><script defer src="{% static '<%- file %>' %}"></script><% }); %>
     <% _.forEach(htmlWebpackPlugin.files.css, function(file) { %><link href="{% static '<%- file %>' %}" rel="stylesheet"><% }); %>
+    <link rel="stylesheet" type="text/css" href="{% static 'zsr-theme.css' %}">
 
     <script type='text/javascript'>
       <!--

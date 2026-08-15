@@ -660,8 +660,10 @@ class DonorCache(models.Model):
     @staticmethod
     @receiver(signals.post_save, sender=Donation)
     @receiver(signals.post_delete, sender=Donation)
-    def donation_update(sender, instance, **args):
-        if not instance.donor:
+    def donation_update(sender, instance, raw=False, **args):
+        # Fixtures are saved with raw=True while related objects may not have
+        # been loaded yet. Their serialized DonorCache rows are loaded later.
+        if raw or not instance.donor_id:
             return
 
         DonorCache.objects.get_or_create(event=instance.event, donor=instance.donor)[

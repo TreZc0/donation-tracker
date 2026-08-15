@@ -2,6 +2,7 @@ import logging
 import random
 from decimal import Decimal
 from unittest import skip
+from unittest.mock import patch
 
 from django.contrib.admin import AdminSite
 from django.contrib.auth.models import AnonymousUser, Permission, User
@@ -37,6 +38,22 @@ class TestDonorTotals(TestCase, AssertionHelpers):
         self.ev3 = models.Event.objects.create(
             short='ev3', name='Event 3', datetime=today_noon, paypalcurrency='EUR'
         )
+
+    def test_raw_donation_does_not_update_cache(self):
+        donation = models.Donation(
+            donor=self.john,
+            event=self.ev1,
+            amount=5,
+            domain='PAYPAL',
+            transactionstate='COMPLETED',
+        )
+
+        with patch.object(models.DonorCache.objects, 'get_or_create') as get_or_create:
+            models.DonorCache.donation_update(
+                models.Donation, donation, raw=True
+            )
+
+        get_or_create.assert_not_called()
 
     def test_donor_cache(self):
         self.assertEqual(0, models.DonorCache.objects.count())

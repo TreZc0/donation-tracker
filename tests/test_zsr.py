@@ -54,6 +54,40 @@ class TestZSRLegacyExport(TransactionTestCase):
                 cursor.execute(f'ALTER TABLE {run_table} DROP COLUMN {shortname}')
 
 
+class TestZSRFixturePreparation(TestCase):
+    def test_rewrites_removed_permission_for_users_and_groups(self):
+        old_permission = ['view_full_list', 'tracker', 'donation']
+        fixture = [
+            {
+                'model': 'auth.user',
+                'pk': 4,
+                'fields': {'user_permissions': [old_permission]},
+            },
+            {
+                'model': 'auth.group',
+                'pk': 2,
+                'fields': {'permissions': [old_permission]},
+            },
+        ]
+
+        with TemporaryDirectory() as directory:
+            input_path = Path(directory) / 'legacy.json'
+            output_path = Path(directory) / 'prepared.json'
+            input_path.write_text(json.dumps(fixture), encoding='utf-8')
+            output = StringIO()
+
+            call_command(
+                'prepare_zsr_fixture', input_path, output_path, stdout=output
+            )
+
+            prepared = json.loads(output_path.read_text(encoding='utf-8'))
+
+        expected = ['view_donation', 'tracker', 'donation']
+        self.assertEqual(prepared[0]['fields']['user_permissions'], [expected])
+        self.assertEqual(prepared[1]['fields']['permissions'], [expected])
+        self.assertIn('rewrote 2 permission reference(s)', output.getvalue())
+
+
 class TestZSRRunMetadata(TestCase):
     def setUp(self):
         self.event = Event.objects.create(

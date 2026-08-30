@@ -1,6 +1,7 @@
 import datetime
 from itertools import pairwise
 from typing import Iterable, List, Optional, Union
+from unittest import mock
 
 from django.db.models import F
 
@@ -13,6 +14,7 @@ from tracker.api.serializers import (
     TalentSerializer,
     VideoLinkSerializer,
 )
+from tracker.api.views.run import SpeedRunViewSet
 
 from .. import randgen
 from ..test_speedrun import TestSpeedRunBase
@@ -654,6 +656,17 @@ class TestRunMove(TestSpeedRunBase, APITestCase):
 
     def test_unordered_to_last(self):
         self.assertResults(self.run4, order='last', expected_change_count=1)
+        self.assertRunsInOrder([self.run1, self.run2, self.run3, self.run5, self.run4])
+
+    def test_unordered_to_last_with_nulls_last_ordering(self):
+        # PostgreSQL sorts nulls last by default for ascending order. Without
+        # explicitly excluding unordered runs when finding the last scheduled
+        # run, the moving run can be selected as its own predecessor.
+        queryset = SpeedRunViewSet.queryset.order_by(
+            F('order').asc(nulls_last=True)
+        )
+        with mock.patch.object(SpeedRunViewSet, 'queryset', queryset):
+            self.assertResults(self.run4, order='last', expected_change_count=1)
         self.assertRunsInOrder([self.run1, self.run2, self.run3, self.run5, self.run4])
 
     def test_remove_from_order(self):

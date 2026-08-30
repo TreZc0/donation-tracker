@@ -186,7 +186,7 @@ class SpeedRunViewSet(
                         checkpoints.add(forward_runs.last())
                     if slot := reordered_runs.first():
                         moving.starttime = slot.starttime
-                    elif slot := queryset.last():  # end of the event
+                    elif slot := queryset.exclude(order=None).last():  # end of the event
                         moving.starttime = slot.endtime
                     else:
                         moving.starttime = moving.event.datetime

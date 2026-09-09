@@ -11,6 +11,16 @@
   opacity: 0.5;
 }
 
+:local(.editableInput) {
+  color: #fff;
+  background-color: #212529;
+  border-color: #6c757d;
+}
+
+:local(.editableInput)::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
 :not(:local(.canDrop)) {
   &:local(.isItemDragging):not(:local(.isDragging)) {
     background: #f77;

@@ -222,6 +222,14 @@ describe('ScheduleEditor', () => {
     expect(queryByChainedTestId(subject, 'run-5', 'unorder-run')).toBeNull();
   });
 
+  it('shows append buttons for unordered runs that can be moved', async () => {
+    await renderComponent();
+
+    expect(getByChainedTestId(subject, 'run-4', 'append-run')).not.toBeNull();
+    expect(queryByChainedTestId(subject, 'run-1', 'append-run')).toBeNull();
+    expect(queryByChainedTestId(subject, 'run-5', 'append-run')).toBeNull();
+  });
+
   it('shows no handles and does not try to load unordered runs if the user has no permissions', async () => {
     me.permissions = [];
     await renderComponent();
@@ -367,6 +375,19 @@ describe('ScheduleEditor', () => {
       await waitForAPIErrors(subject);
 
       expect(mock.history.get.filter(c => /interviews|ads/.test(c.url || '')).length).toEqual(count + 2);
+    });
+
+    it('can append an unordered run to the schedule', async () => {
+      act(() => {
+        fireEvent.click(getByChainedTestId(subject, 'run-4', 'append-run'));
+      });
+
+      const result = mock.history.patch.at(0);
+      expect(result).toBeDefined();
+      expect(result?.url).toEqual(Endpoints.MOVE_RUN(4));
+      expect(result?.data).toEqual(JSON.stringify({ order: 'last' }));
+
+      await waitForAPIErrors(subject);
     });
   });
 

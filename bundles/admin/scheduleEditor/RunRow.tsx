@@ -29,7 +29,7 @@ function DragControls({
   canRemoveFromOrder: boolean;
   loading: boolean;
   run: Run;
-  moveRun: (order: number | null) => ReturnType<ReturnType<typeof useMoveRunMutation>[0]>;
+  moveRun: (order: number | null | 'last') => ReturnType<ReturnType<typeof useMoveRunMutation>[0]>;
 }) {
   const saveOrder = React.useCallback((s: string) => moveRun(+s).unwrap(), [moveRun]);
 
@@ -44,7 +44,14 @@ function DragControls({
   ) : (
     <ActiveInput
       className={styles.controls}
-      input={{ style: { maxWidth: 50 }, required: true, min: 1, step: 1, type: 'number' }}
+      input={{
+        className: styles.editableInput,
+        style: { maxWidth: 50 },
+        required: true,
+        min: 1,
+        step: 1,
+        type: 'number',
+      }}
       displayValue={run.order || '-'}
       initialValue={run.order || 1}
       canEdit={true}
@@ -69,6 +76,16 @@ function DragControls({
           onClick={() => moveRun(null)}
         />
       )}
+      {run.order == null && (
+        <button
+          data-testid="append-run"
+          title="Add run to end of schedule"
+          aria-label="Add run to end of schedule"
+          disabled={loading}
+          className={cn({ disabled: loading }, 'btn', 'btn-xs', 'fa', 'fa-arrow-down')}
+          onClick={() => moveRun('last')}
+        />
+      )}
     </ActiveInput>
   );
 }
@@ -86,7 +103,11 @@ function DurationControls({
   return (
     <ActiveInput
       className={styles.controls}
-      input={{ required: true, pattern: durationPattern.toString().slice(1, -1) }}
+      input={{
+        className: styles.editableInput,
+        required: true,
+        pattern: durationPattern.toString().slice(1, -1),
+      }}
       initialValue={value.toFormat('h:mm:ss')}
       canEdit={canChangeRuns}
       loading={loading}
@@ -117,7 +138,7 @@ function StartTimeControls({
   return (
     <ActiveInput
       className={styles.controls}
-      input={{ type: 'datetime-local' }}
+      input={{ className: styles.editableInput, type: 'datetime-local' }}
       displayValue={starttime?.toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY) || '-'}
       initialValue={anchor_time ? toInputTime(anchor_time) : ''}
       canEdit={canEditRuns && anchor_time != null}
@@ -207,7 +228,7 @@ export function RunRow({
   );
 
   const moveRunTo = React.useCallback(
-    (order: number | null) => {
+    (order: number | null | 'last') => {
       const result = moveRun({ id: run.id, order });
       result.then(refreshInterstitials);
       return result;

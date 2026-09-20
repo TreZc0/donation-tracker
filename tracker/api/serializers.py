@@ -1035,6 +1035,7 @@ class TalentSerializer(
             'stream',
             'twitter',
             'youtube',
+            'discord',
             'platform',
             'pronouns',
         )
@@ -1121,6 +1122,7 @@ class SpeedRunSerializer(
     runners = TalentSerializer(many=True, allow_empty=False)
     hosts = TalentSerializer(many=True, required=False)
     commentators = TalentSerializer(many=True, required=False)
+    trackers = TalentSerializer(many=True, required=False)
     video_links = VideoLinkSerializer(many=True, required=False)
     priority_tag = AbstractTagField(
         model=Tag, allow_null=True, required=False, allow_create=True
@@ -1146,6 +1148,7 @@ class SpeedRunSerializer(
             'runners',
             'hosts',
             'commentators',
+            'trackers',
             'starttime',
             'endtime',
             'order',

@@ -42,6 +42,7 @@ class TalentViewSet(FlatteningViewSetMixin, EventNestedMixin, TrackerFullViewSet
                 for m in queryset.filter(runs__event=event)
                 .union(queryset.filter(hosting__event=event))
                 .union(queryset.filter(commentating__event=event))
+                .union(queryset.filter(tracking__event=event))
                 .union(queryset.filter(interviewer_for__event=event))
                 .union(queryset.filter(subject_for__event=event))
             )
@@ -79,6 +80,10 @@ class TalentViewSet(FlatteningViewSetMixin, EventNestedMixin, TrackerFullViewSet
         return self._fetch_sublist(self._sublist_event_filter('commentating'))
 
     @action(detail=False)
+    def trackers(self, *args, **kwargs):
+        return self._fetch_sublist(self._sublist_event_filter('tracking'))
+
+    @action(detail=False)
     def interviewers(self, *args, **kwargs):
         return self._fetch_sublist(self._sublist_event_filter('interviewer_for'))
 
@@ -101,7 +106,9 @@ class TalentViewSet(FlatteningViewSetMixin, EventNestedMixin, TrackerFullViewSet
     @action(detail=True)
     def participating(self, *args, **kwargs):
         obj = self.get_object()
-        return self._fetch_run_list(Q(runners=obj) | Q(hosts=obj) | Q(commentators=obj))
+        return self._fetch_run_list(
+            Q(runners=obj) | Q(hosts=obj) | Q(commentators=obj) | Q(trackers=obj)
+        )
 
     @action(detail=True)
     def runs(self, *args, **kwargs):
@@ -114,6 +121,10 @@ class TalentViewSet(FlatteningViewSetMixin, EventNestedMixin, TrackerFullViewSet
     @action(detail=True)
     def commentating(self, *args, **kwargs):
         return self._fetch_run_list(Q(commentators=self.get_object()))
+
+    @action(detail=True)
+    def tracking(self, *args, **kwargs):
+        return self._fetch_run_list(Q(trackers=self.get_object()))
 
     def _fetch_interview_list(self, query_filter):
         viewset = InterviewViewSet(request=self.request, kwargs=self.kwargs)

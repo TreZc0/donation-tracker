@@ -40,6 +40,7 @@ class TestTalent(APITestCase):
         self.runner.runs.add(*self.runs)
         self.host.hosting.add(*self.runs)
         self.commentator.commentating.add(*self.runs)
+        self.commentator.tracking.add(*self.runs)
         self.interview = randgen.generate_interview(self.rand, event=self.event)
         self.interview.save()
         self.interview.interviewers.add(self.interviewer)
@@ -60,11 +61,13 @@ class TestTalent(APITestCase):
         self.spread_talent.runs.add(self.spread_runs[0])
         self.spread_talent.hosting.add(self.spread_runs[1])
         self.spread_talent.commentating.add(self.spread_runs[2])
+        self.spread_talent.tracking.add(self.spread_runs[0])
         self.spread_talent.interviewer_for.add(self.spread_interviews[0])
         self.spread_talent.subject_for.add(self.spread_interviews[1])
         self.spread_draft_talent.runs.add(self.spread_draft_runs[0])
         self.spread_draft_talent.hosting.add(self.spread_draft_runs[1])
         self.spread_draft_talent.commentating.add(self.spread_draft_runs[2])
+        self.spread_draft_talent.tracking.add(self.spread_draft_runs[0])
         self.spread_draft_talent.interviewer_for.add(self.spread_draft_interviews[0])
         self.spread_draft_talent.subject_for.add(self.spread_draft_interviews[1])
         self.other_runs = randgen.generate_runs(
@@ -155,6 +158,19 @@ class TestTalent(APITestCase):
                 )
                 self.assertExactV2Models({self.spread_draft_talent}, data)
 
+                data = self.get_noun('trackers')
+                self.assertExactV2Models({self.commentator, self.spread_talent}, data)
+
+                data = self.get_noun(
+                    'trackers', kwargs={'event_pk': self.other_event.pk}
+                )
+                self.assertEmptyModels(data)
+
+                data = self.get_noun(
+                    'trackers', kwargs={'event_pk': self.draft_event.pk}
+                )
+                self.assertExactV2Models({self.spread_draft_talent}, data)
+
                 data = self.get_noun('interviewers')
                 self.assertExactV2Models({self.interviewer, self.spread_talent}, data)
 
@@ -188,6 +204,7 @@ class TestTalent(APITestCase):
                     'runs',
                     'hosting',
                     'commentating',
+                    'tracking',
                     'interviewer',
                     'subject',
                 ]:
@@ -205,6 +222,7 @@ class TestTalent(APITestCase):
                                     *model.runs.filter(q),
                                     *model.hosting.filter(q),
                                     *model.commentating.filter(q),
+                                    *model.tracking.filter(q),
                                 }
                             elif noun == 'runs':
                                 expected = {*model.runs.filter(q)}
@@ -212,6 +230,8 @@ class TestTalent(APITestCase):
                                 expected = {*model.hosting.filter(q)}
                             elif noun == 'commentating':
                                 expected = {*model.commentating.filter(q)}
+                            elif noun == 'tracking':
+                                expected = {*model.tracking.filter(q)}
                             elif noun == 'interviews':
                                 expected = {
                                     *model.interviewer_for.filter(q),
@@ -230,6 +250,7 @@ class TestTalent(APITestCase):
                                     Q(runs__event=event)
                                     | Q(hosting__event=event)
                                     | Q(commentating__event=event)
+                                    | Q(tracking__event=event)
                                     | Q(interviewer_for__event=event)
                                     | Q(subject_for__event=event),
                                     id=model.id,
@@ -267,6 +288,7 @@ class TestTalent(APITestCase):
                 'runners',
                 'hosts',
                 'commentators',
+                'trackers',
                 'interviewers',
                 'subjects',
             ]:
@@ -284,6 +306,7 @@ class TestTalent(APITestCase):
                 'runs',
                 'hosting',
                 'commentating',
+                'tracking',
                 'interviewer',
                 'subject',
             ]:
@@ -310,6 +333,7 @@ class TestTalent(APITestCase):
                         'stream': 'http://deadbeef.com/',
                         'twitter': 'SpikeVegeta',
                         'youtube': 'SpikeVegeta',
+                        'discord': 'spikevegeta',
                         'pronouns': 'he/him',
                     }
                 )
@@ -318,6 +342,7 @@ class TestTalent(APITestCase):
                 self.assertEqual(talent.stream, 'http://deadbeef.com/')
                 self.assertEqual(talent.twitter, 'SpikeVegeta')
                 self.assertEqual(talent.youtube, 'SpikeVegeta')
+                self.assertEqual(talent.discord, 'spikevegeta')
                 self.assertEqual(talent.pronouns, 'he/him')
 
         with self.subTest('already exists'):
@@ -343,6 +368,7 @@ class TestTalent(APITestCase):
                         'stream': 'http://deadbeef.com/',
                         'twitter': 'SpikeVegeta',
                         'youtube': 'SpikeVegeta',
+                        'discord': 'spikevegeta',
                         'pronouns': 'he/him',
                     },
                 )
@@ -351,6 +377,7 @@ class TestTalent(APITestCase):
                 self.assertEqual(self.runner.stream, 'http://deadbeef.com/')
                 self.assertEqual(self.runner.twitter, 'SpikeVegeta')
                 self.assertEqual(self.runner.youtube, 'SpikeVegeta')
+                self.assertEqual(self.runner.discord, 'spikevegeta')
                 self.assertEqual(self.runner.pronouns, 'he/him')
 
         with self.subTest('already exists'):

@@ -31,7 +31,12 @@ class SpeedRunViewSet(
     queryset = SpeedRun.objects.select_related(
         'event', 'priority_tag', 'zsr_metadata'
     ).prefetch_related(
-        'runners', 'hosts', 'commentators', 'video_links__link_type', 'tags'
+        'runners',
+        'hosts',
+        'commentators',
+        'trackers',
+        'video_links__link_type',
+        'tags',
     )
     serializer_class = SpeedRunSerializer
     pagination_class = TrackerPagination

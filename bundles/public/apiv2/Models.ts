@@ -214,6 +214,7 @@ export interface Run extends ModelBase {
   runners: Talent[];
   hosts: Talent[];
   commentators: Talent[];
+  trackers: Talent[];
   starttime: null | DateTime;
   endtime: null | DateTime;
   order: number | null;
@@ -352,6 +353,7 @@ export interface Talent extends ModelBase {
   stream: string;
   twitter: string;
   youtube: string;
+  discord: string;
   platform: string;
   pronouns: string;
 }

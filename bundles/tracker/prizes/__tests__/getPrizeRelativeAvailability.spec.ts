@@ -23,6 +23,7 @@ const run1: OrderedRun = processRun(
     runners: [getFixtureTalent({ name: 'faulty' })],
     console: 'PS1',
     commentators: [],
+    trackers: [],
     description: 'Spyro a drago',
     starttime: '2019-12-10T09:00:00Z',
     endtime: '2019-12-10T11:00:00Z',

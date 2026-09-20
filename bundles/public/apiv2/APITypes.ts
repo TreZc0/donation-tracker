@@ -228,6 +228,7 @@ export interface RunPost {
   runners: TalentAPIId[];
   hosts?: TalentAPIId[];
   commentators?: TalentAPIId[];
+  trackers?: TalentAPIId[];
   run_time: string;
   setup_time: string;
   anchor_time?: string | null;
@@ -352,6 +353,7 @@ export interface TalentPost {
   stream?: string;
   twitter?: string;
   youtube?: string;
+  discord?: string;
   pronouns?: string;
 }
 

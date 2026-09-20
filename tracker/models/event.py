@@ -505,6 +505,9 @@ class SpeedRun(models.Model):
     commentators = models.ManyToManyField(
         'tracker.Talent', related_name='commentating', blank=True
     )
+    trackers = models.ManyToManyField(
+        'tracker.Talent', related_name='tracking', blank=True
+    )
     coop = models.BooleanField(
         default=False,
         help_text='Cooperative runs should be marked with this for layout purposes',
@@ -595,6 +598,10 @@ class SpeedRun(models.Model):
     @property
     def commentators_text(self):
         return ', '.join(t.name for t in self.commentators.all())
+
+    @property
+    def trackers_text(self):
+        return ', '.join(t.name for t in self.trackers.all())
 
     def clean(self):
         errors = defaultdict(list)
@@ -807,6 +814,7 @@ class Talent(models.Model):
     stream = models.URLField(max_length=128, blank=True)
     twitter = models.SlugField(max_length=15, blank=True)
     youtube = models.SlugField(max_length=20, blank=True)
+    discord = models.CharField(max_length=64, blank=True)
     platform = models.CharField(
         max_length=20,
         default='TWITCH',

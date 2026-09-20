@@ -27,6 +27,7 @@ export function getFixtureRun(overrides?: Partial<APIRun>): APIRun {
     runners: [getFixtureTalent()],
     hosts: [],
     commentators: [],
+    trackers: [],
     layout: 'standard',
     video_links: [],
     priority_tag: null,

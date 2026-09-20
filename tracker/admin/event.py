@@ -822,6 +822,7 @@ class TalentAdmin(CustomModelAdmin):
         'stream',
         'twitter',
         'youtube',
+        'discord',
         'platform',
         'pronouns',
         'donor__alias',
@@ -834,6 +835,7 @@ class TalentAdmin(CustomModelAdmin):
         'stream',
         'twitter',
         'youtube',
+        'discord',
         'platform',
         'pronouns',
         'donor',
@@ -843,6 +845,7 @@ class TalentAdmin(CustomModelAdmin):
         'runs_',
         'hosting_',
         'commentating_',
+        'tracking_',
         'interviews_',
         'interviewer_',
         'subject_',
@@ -851,13 +854,17 @@ class TalentAdmin(CustomModelAdmin):
         EventFilter(
             'participating',
             lambda v: (
-                Q(runs__event=v) | Q(hosting__event=v) | Q(commentating__event=v)
+                Q(runs__event=v)
+                | Q(hosting__event=v)
+                | Q(commentating__event=v)
+                | Q(tracking__event=v)
             ),
             'Participating in Run by Event',
         ),
         EventFilter('runs'),
         EventFilter('hosting'),
         EventFilter('commentating'),
+        EventFilter('tracking'),
         EventFilter(
             'interviews',
             lambda v: (Q(interviewer_for__event=v) | Q(subject_for__event=v)),
@@ -875,6 +882,7 @@ class TalentAdmin(CustomModelAdmin):
                     'stream',
                     'twitter',
                     'youtube',
+                    'discord',
                     'platform',
                     'pronouns',
                     'donor',
@@ -889,6 +897,7 @@ class TalentAdmin(CustomModelAdmin):
                     'runs_',
                     'hosting_',
                     'commentating_',
+                    'tracking_',
                     'interviews_',
                     'interviewer_',
                     'subject_',
@@ -957,6 +966,21 @@ class TalentAdmin(CustomModelAdmin):
         else:
             return 'Not Saved Yet'
 
+    @admin.display(description='Tracking')
+    def tracking_(self, instance):
+        if instance.id is not None:
+            return format_html(
+                '<a href="{u}?trackers={id}">View</a>',
+                u=(
+                    reverse(
+                        'admin:tracker_speedrun_changelist',
+                    )
+                ),
+                id=instance.id,
+            )
+        else:
+            return 'Not Saved Yet'
+
     @admin.display(description='Participating in Interview')
     def interviews_(self, instance):
         if instance.id is not None:
@@ -1010,6 +1034,7 @@ class SpeedRunAdmin(EventArchivedMixin, CustomModelAdmin):
         'runners',
         'hosts',
         'commentators',
+        'trackers',
         'priority_tag',
         'tags',
     )
@@ -1019,6 +1044,7 @@ class SpeedRunAdmin(EventArchivedMixin, CustomModelAdmin):
         'runners__name',
         'hosts__name',
         'commentators__name',
+        'trackers__name',
         'priority_tag__name',
         'tags__name',
     ]
@@ -1030,6 +1056,7 @@ class SpeedRunAdmin(EventArchivedMixin, CustomModelAdmin):
         'runners_',
         'hosts_',
         'commentators_',
+        'trackers_',
         'start_time',
         'anchored',
         'run_time',
@@ -1057,6 +1084,7 @@ class SpeedRunAdmin(EventArchivedMixin, CustomModelAdmin):
                     'runners',
                     'hosts',
                     'commentators',
+                    'trackers',
                     'coop',
                     'onsite',
                     'tech_notes',
@@ -1100,6 +1128,10 @@ class SpeedRunAdmin(EventArchivedMixin, CustomModelAdmin):
     @admin.display(description='Commentators')
     def commentators_(self, instance):
         return ', '.join(str(c) for c in instance.commentators.all()) or None
+
+    @admin.display(description='Trackers')
+    def trackers_(self, instance):
+        return ', '.join(str(t) for t in instance.trackers.all()) or None
 
     @admin.display(description='Start Time')
     def start_time(self, instance):
@@ -1244,7 +1276,7 @@ class SpeedRunAdmin(EventArchivedMixin, CustomModelAdmin):
         return (
             search_filters.run_model_query('run', params, user=request.user)
             .select_related('priority_tag')
-            .prefetch_related('runners', 'hosts', 'commentators', 'tags')
+            .prefetch_related('runners', 'hosts', 'commentators', 'trackers', 'tags')
         )
 
     def get_urls(self):

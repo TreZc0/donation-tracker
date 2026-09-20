@@ -133,6 +133,7 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
                     'runners': [self.runner1.name],
                     'hosts': [self.headset1.name],
                     'commentators': [self.headset2.name],
+                    'trackers': [self.runner2.name],
                     'order': 'last',
                     'run_time': '15:00',
                     'setup_time': '5:00',
@@ -177,6 +178,11 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
                 model.commentators.all(),
                 msg='Commentators were not assigned correctly',
             )
+            self.assertQuerySetEqual(
+                models.Talent.objects.filter(id=self.runner2.id),
+                model.trackers.all(),
+                msg='Trackers were not assigned correctly',
+            )
             link = models.VideoLink.objects.get(id=data['video_links'][0]['id'])
             self.assertEqual(link.url, 'https://youtu.be/deadbeef2')
             self.assertEqual(
@@ -204,6 +210,7 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
                     'runners': [self.runner1.name, 'JesseDoe'],
                     'hosts': [self.headset1.name, 'JohnDoe'],
                     'commentators': [self.headset2.name, 'JaneDoe'],
+                    'trackers': [self.runner2.name, 'TrackerDoe'],
                     'video_links': [{'link_type': 'google_video'}],
                     'priority_tag': 'invalid tag',  # implicit creation, but fails validation
                 },
@@ -212,6 +219,7 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
                     'runners': 'invalid_natural_key',
                     'hosts': 'invalid_natural_key',
                     'commentators': 'invalid_natural_key',
+                    'trackers': 'invalid_natural_key',
                     'video_links': {'link_type': 'invalid_natural_key'},
                     'priority_tag': 'invalid',
                 },
@@ -278,6 +286,7 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
                     'runners': [self.runner1.id],
                     'hosts': [self.headset2.id],
                     'commentators': [self.headset1.id],
+                    'trackers': [self.runner2.id],
                 },
             )
             self.assertV2ModelPresent(self.run1, data)
@@ -293,6 +302,10 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
                 models.Talent.objects.filter(id=self.headset1.id),
                 self.run1.commentators.all(),
             )
+            self.assertQuerySetEqual(
+                models.Talent.objects.filter(id=self.runner2.id),
+                self.run1.trackers.all(),
+            )
 
         with (
             self.subTest('update with NKs'),
@@ -305,6 +318,7 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
                     'runners': [self.runner2.name],
                     'hosts': [self.headset1.name],
                     'commentators': [self.headset2.name],
+                    'trackers': [self.runner1.name],
                 },
             )
             self.assertV2ModelPresent(self.run1, data)
@@ -319,6 +333,10 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
             self.assertQuerySetEqual(
                 models.Talent.objects.filter(id=self.headset2.id),
                 self.run1.commentators.all(),
+            )
+            self.assertQuerySetEqual(
+                models.Talent.objects.filter(id=self.runner1.id),
+                self.run1.trackers.all(),
             )
 
         with (
@@ -347,6 +365,7 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
                 data={
                     'hosts': [],
                     'commentators': [],
+                    'trackers': [],
                     'priority_tag': None,
                     'tags': [],
                 },
@@ -354,6 +373,7 @@ class TestRunViewSet(TestSpeedRunBase, APITestCase):
             self.assertV2ModelPresent(self.run1, data)
             self.assertSequenceEqual([], self.run1.hosts.all())
             self.assertSequenceEqual([], self.run1.commentators.all())
+            self.assertSequenceEqual([], self.run1.trackers.all())
             self.assertSequenceEqual([], self.run1.tags.all())
 
         with self.subTest('no nested updates'), self.assertLogsChanges(0):
@@ -394,6 +414,7 @@ class TestRunSerializer(TestSpeedRunBase, APITestCase):
             'display_name': run.display_name,
             'twitch_name': run.twitch_name,
             'commentators': TalentSerializer(run.commentators, many=True).data,
+            'trackers': TalentSerializer(run.trackers, many=True).data,
             'run_time': run.run_time,
             'order': run.order,
             'hosts': TalentSerializer(run.hosts, many=True).data,

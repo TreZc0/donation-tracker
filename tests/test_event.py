@@ -1009,6 +1009,7 @@ minimal@example.com
         self.assertEqual(response.status_code, 200)
         response = self.client.get(reverse('admin:tracker_speedrun_add'))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id_trackers')
         response = self.client.get(
             reverse('admin:tracker_speedrun_change', args=(self.run.id,))
         )
@@ -1020,6 +1021,7 @@ minimal@example.com
         self.assertEqual(response.status_code, 200)
         response = self.client.get(reverse('admin:tracker_talent_add'))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id_discord')
         response = self.client.get(
             reverse('admin:tracker_talent_change', args=(self.runner.id,))
         )

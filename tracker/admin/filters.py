@@ -119,7 +119,10 @@ class RunParticipantFilter(SimpleListFilter):
             except ValueError:
                 value = models.Talent.objects.get_by_natural_key(value) or value
             return queryset.filter(
-                Q(runners=value) | Q(hosts=value) | Q(commentators=value)
+                Q(runners=value)
+                | Q(hosts=value)
+                | Q(commentators=value)
+                | Q(trackers=value)
             )
         else:
             return queryset

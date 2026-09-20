@@ -74,7 +74,15 @@ _GeneralFields = {
     'headset': ['name'],
     'prize': ['name', 'description', 'shortdescription'],
     'run': ['name', 'description'],
-    'runner': ['name', 'stream', 'twitter', 'youtube', 'platform', 'pronouns'],
+    'runner': [
+        'name',
+        'stream',
+        'twitter',
+        'youtube',
+        'discord',
+        'platform',
+        'pronouns',
+    ],
     'tag': ['name'],
 }
 

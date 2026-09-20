@@ -184,7 +184,15 @@ def generate_run(
 
 
 def generate_talent(
-    rand, /, *, name=None, stream=None, twitter=None, youtube=None, donor=None
+    rand,
+    /,
+    *,
+    name=None,
+    stream=None,
+    twitter=None,
+    youtube=None,
+    discord=None,
+    donor=None,
 ):
     if callable(name):
         name = name()
@@ -193,6 +201,7 @@ def generate_talent(
         stream=stream or ('https://twitch.tv/%s' % random_name(rand, 'twitch')),
         twitter=twitter or random_name(rand, 'twitter')[:14],
         youtube=youtube or random_name(rand, 'youtube'),
+        discord=discord or random_name(rand, 'discord'),
         donor=donor,
     )
     talent.full_clean()

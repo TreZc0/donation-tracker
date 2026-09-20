@@ -8,6 +8,7 @@ export function getFixtureTalent(overrides?: Partial<Talent>): Talent {
     stream: 'https://twitch.tv/famous',
     twitter: 'Famous',
     youtube: 'Famous',
+    discord: 'famous',
     platform: 'TWITCH',
     pronouns: 'any/all',
     ...overrides,

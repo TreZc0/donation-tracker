@@ -472,6 +472,17 @@ export type BidQuery = WithListen<{
   urlParams?: Parameters<typeof Endpoints.BIDS>[0];
   queryParams?: WithPage<BidGet>;
 }>;
+
+export function pendingBidTag(args: BidQuery | void) {
+  const params = args?.urlParams;
+  return { type: 'bids' as const, id: `pending:${typeof params === 'object' ? (params.eventId ?? 'all') : 'all'}` };
+}
+
+function bidTags(_result: unknown, _error: unknown, args: BidQuery | void) {
+  return typeof args?.urlParams === 'object' && args.urlParams.feed === 'pending'
+    ? ['bids' as const, pendingBidTag(args)]
+    : ['bids' as const];
+}
 export type DonationQuery = WithListen<{
   urlParams?: Parameters<typeof Endpoints.DONATIONS>[0];
   queryParams?: WithPage<DonationGet>;
@@ -541,11 +552,11 @@ export const trackerBaseApi = createApi({
     }),
     bids: build.query<FlatBid[], BidQuery | void>({
       queryFn: paginatedQuery(Endpoints.BIDS, identity<FlatBid>, { tree: false }),
-      providesTags: ['bids'],
+      providesTags: bidTags,
     }),
     bidTree: build.query<TreeBid[], BidQuery | void>({
       queryFn: paginatedQuery(Endpoints.BIDS, identity<TreeBid>, { tree: true }),
-      providesTags: ['bids'],
+      providesTags: bidTags,
     }),
     approveBid: build.mutation<FlatBid, number>({
       queryFn: simpleQuery(Endpoints.APPROVE_BID, 'PATCH'),

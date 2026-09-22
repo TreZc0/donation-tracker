@@ -32,6 +32,7 @@ const NavRoutes = {
 
   ADMIN_HOME: `/`,
   PROCESS_DONATIONS: (eventId: number) => `v2/${eventId}/processing/donations`,
+  PROCESS_BIDS: (eventId: number) => `v2/${eventId}/processing/bids`,
   READ_DONATIONS: (eventId: number) => `v2/${eventId}/processing/read`,
   SCHEDULE_EDITOR: (eventId: number) => `schedule_editor/${eventId}`,
 };
@@ -104,6 +105,7 @@ export function PrimaryNavPopout(props: PrimaryNavPopoutProps) {
           </Header>
           <Anchor href={usePath(NavRoutes.ADMIN_HOME)}>Admin Home</Anchor>
           <Anchor href={usePath(NavRoutes.PROCESS_DONATIONS(eventId))}>Process Donations</Anchor>
+          <Anchor href={usePath(NavRoutes.PROCESS_BIDS(eventId))}>Process Pending Bids</Anchor>
           <Anchor href={usePath(NavRoutes.READ_DONATIONS(eventId))}>Read Donations</Anchor>
           <Anchor href={usePath(NavRoutes.SCHEDULE_EDITOR(eventId))}>Schedule Editor</Anchor>
           <Spacer />

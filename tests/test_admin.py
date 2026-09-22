@@ -162,7 +162,7 @@ class ProcessDonationsAndBidsBrowserTest(TrackerSeleniumTestCase):
     def process_bid(self, bid_id, action):
         self.webdriver.find_element(
             By.CSS_SELECTOR,
-            f'tr[data-testid="bid-{bid_id}"] button[data-testid="action-{action}"]',
+            f'div[data-testid="bid-{bid_id}"] button[data-testid="action-{action}"]',
         ).click()
 
     def test_host_only(self):
@@ -224,11 +224,11 @@ class ProcessDonationsAndBidsBrowserTest(TrackerSeleniumTestCase):
         self.process_bid(self.children[1].pk, 'deny')
         self.webdriver.find_element(
             By.CSS_SELECTOR,
-            f'tr[data-testid="bid-{self.children[0].pk}"] td[data-testid="state-OPENED"]',
+            f'[data-testid="bid-history-{self.children[0].pk}"]',
         )
         self.webdriver.find_element(
             By.CSS_SELECTOR,
-            f'tr[data-testid="bid-{self.children[1].pk}"] td[data-testid="state-DENIED"]',
+            f'[data-testid="bid-history-{self.children[1].pk}"]',
         )
         self.children[0].refresh_from_db()
         self.children[1].refresh_from_db()

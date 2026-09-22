@@ -734,6 +734,56 @@ class DonationBid(models.Model):
         return str(self.bid) + ' -- ' + str(self.donation)
 
 
+BID_PROCESSING_FIELDS = (
+    'event_id',
+    'parent_id',
+    'speedrun_id',
+    'name',
+    'state',
+    'description',
+    'allowuseroptions',
+    'option_max_length',
+    'count',
+)
+
+
+@receiver(signals.pre_save, sender=Bid)
+def bid_before_change(sender, instance, using, **kwargs):
+    if not kwargs.get('raw', False):
+        instance._processing_before = (
+            sender.objects.using(using)
+            .filter(pk=instance.pk)
+            .values(*BID_PROCESSING_FIELDS)
+            .first()
+            if instance.pk
+            else None
+        )
+
+
+@receiver(signals.post_save, sender=Bid)
+def bid_changed(sender, instance, using, **kwargs):
+    from tracker.consumers.bids import broadcast_bid_change
+
+    if not kwargs.get('raw', False):
+        before = instance._processing_before
+        after = {field: getattr(instance, field) for field in BID_PROCESSING_FIELDS}
+        # Only crossing zero changes eligibility for the flat pending feed.
+        for snapshot in (before, after):
+            if snapshot is not None:
+                snapshot['count'] = bool(snapshot['count'])
+        if before != after:
+            broadcast_bid_change(instance.event_id, using=using)
+            if before and before['event_id'] != instance.event_id:
+                broadcast_bid_change(before['event_id'], using=using)
+
+
+@receiver(signals.post_delete, sender=Bid)
+def bid_deleted(sender, instance, using, **kwargs):
+    from tracker.consumers.bids import broadcast_bid_change
+
+    broadcast_bid_change(instance.event_id, using=using)
+
+
 @receiver(signals.post_save, sender=DonationBid)
 def DonationBidParentUpdate(sender, instance, created, raw, **kwargs):
     if raw:

@@ -20,7 +20,25 @@
 
 .main {
   flex: 1 1 auto;
+  min-width: 0;
   position: relative;
   overflow-y: scroll;
   padding: 0 16px;
+}
+
+@media (max-width: 720px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    flex-basis: auto;
+    overflow-y: visible;
+  }
+
+  .main {
+    overflow-y: visible;
+  }
 }

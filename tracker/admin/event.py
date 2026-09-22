@@ -498,6 +498,15 @@ class EventAdmin(RelatedUserMixin, CustomModelAdmin):
 
     @staticmethod
     def ui_view(request, extra='', **kwargs):
+        if extra.startswith('process_pending_bids/'):
+            event_id = extra.removeprefix('process_pending_bids/').strip('/')
+            if event_id:
+                return HttpResponseRedirect(
+                    reverse(
+                        'admin:tracker_ui',
+                        kwargs={'extra': f'v2/{event_id}/processing/bids'},
+                    )
+                )
         if extra.startswith('v2'):
             template = 'ui/generated/processing.html'
         else:

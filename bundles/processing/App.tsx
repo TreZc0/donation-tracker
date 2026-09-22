@@ -7,6 +7,7 @@ import NotFound from '@public/notFound';
 
 import * as Theming from './modules/theming/Theming';
 import ProcessDonations from './pages/ProcessDonations';
+import ProcessPendingBids from './pages/ProcessPendingBids';
 import ReadDonations from './pages/ReadDonations';
 import { AppContainer } from './Theming';
 
@@ -16,6 +17,7 @@ import '@faulty/gdq-design/style.css';
 
 export default function App() {
   const canViewDonationFeeds = usePermission('tracker.view_comments', 'tracker.view_donation', 'tracker.view_bid');
+  const canViewBids = usePermission('tracker.view_bid');
   const { theme, accent } = Theming.useThemeStore();
   const { ROOT_PATH } = useConstants();
 
@@ -25,6 +27,7 @@ export default function App() {
     <AppContainer theme={theme} accent={accent}>
       <BrowserRouter basename={ROOT_PATH}>
         <Routes>
+          {canViewBids && <Route path="/v2/:eventId/processing/bids" element={<ProcessPendingBids />} />}
           {canViewDonationFeeds && (
             <>
               <Route path="/v2/:eventId/processing/donations" element={<ProcessDonations />} />

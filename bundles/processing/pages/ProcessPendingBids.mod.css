@@ -1,0 +1,105 @@
+.sidebarHeader {
+  border-bottom: 1px solid var(--border-color-primary);
+  padding-bottom: var(--space-md);
+}
+
+.heading,
+.bidName {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.eventLabel {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.eventSelect {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--border-color-primary);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.queueHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 0 16px;
+  border-bottom: 1px solid var(--border-color-primary);
+}
+
+.group {
+  margin: 24px 0;
+}
+
+.groupHeader {
+  padding: 12px;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--border-color-primary);
+  overflow-wrap: anywhere;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color-primary);
+}
+
+.bidName {
+  flex: 1;
+}
+
+.overLimit {
+  background-color: var(--status-warning-translucent);
+  box-shadow: inset 3px 0 var(--status-warning-background);
+}
+
+.lengthWarning {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.lengthWarning > svg {
+  flex-shrink: 0;
+}
+
+.actions {
+  flex-shrink: 0;
+}
+
+.empty {
+  padding: 48px 0;
+  text-align: center;
+}
+
+.historyEntry {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color-primary);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .bidName {
+    flex-basis: 100%;
+  }
+
+  .actions {
+    margin-left: auto;
+  }
+}

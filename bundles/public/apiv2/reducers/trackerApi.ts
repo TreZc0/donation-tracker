@@ -27,6 +27,7 @@ import {
   EmptyBaseQuery,
   getLimit,
   PageOrInfinite,
+  pendingBidTag,
   Tags,
   TrackerApiInfiniteQueryEndpoints,
   TrackerApiMutationEndpoints,
@@ -734,6 +735,27 @@ function isTree(data: TreeBid[] | FlatBid[]): data is TreeBid[] {
 
 const socketBids: TrackerQueryOnCacheEntryAdded<'bids' | 'bidTree'> = async (args, api) => {
   if (!args?.listen) {
+    return;
+  }
+
+  if (typeof args.urlParams === 'object' && args.urlParams.feed === 'pending') {
+    const eventId = args.urlParams.eventId;
+    const tag = pendingBidTag(args);
+    const remove = await addCallback(
+      getSocketPath(api, 'bid-processing'),
+      api.dispatch,
+      ev => {
+        const event = JSON.parse(ev.data) as { type: string; event: number };
+        if (event.type === 'bids_changed' && (eventId == null || event.event === eventId)) {
+          api.dispatch(trackerBaseApi.util.invalidateTags([tag]));
+        }
+      },
+      [tag],
+    );
+    // Cover changes between the initial fetch and opening the socket.
+    api.dispatch(trackerBaseApi.util.invalidateTags([tag]));
+    await api.cacheEntryRemoved;
+    remove();
     return;
   }
 

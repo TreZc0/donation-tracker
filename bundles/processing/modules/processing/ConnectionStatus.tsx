@@ -20,6 +20,8 @@ import styles from './ConnectionStatus.mod.css';
 interface ConnectionStatusProps {
   refetch: () => unknown;
   isFetching: boolean;
+  socketPath?: string;
+  subject?: string;
 }
 
 const STATUS_CONTENT: Record<CalloutType, { heading: string; body: string }> = {
@@ -41,8 +43,13 @@ const STATUS_CONTENT: Record<CalloutType, { heading: string; body: string }> = {
   },
 };
 
-export default function ConnectionStatus({ refetch, isFetching }: ConnectionStatusProps) {
-  const connectionStatus = useAppSelector(state => state.sockets[getSocketPath(state, 'processing')]);
+export default function ConnectionStatus({
+  refetch,
+  isFetching,
+  socketPath = 'processing',
+  subject = 'donations',
+}: ConnectionStatusProps) {
+  const connectionStatus = useAppSelector(state => state.sockets[getSocketPath(state, socketPath)]);
 
   let calloutType: CalloutType;
 
@@ -61,7 +68,7 @@ export default function ConnectionStatus({ refetch, isFetching }: ConnectionStat
   const statusContent = STATUS_CONTENT[calloutType];
   const [tooltipProps] = useTooltip<HTMLSpanElement>(
     <Text variant="text-sm/normal" className={styles.tooltip}>
-      {statusContent.body}
+      {statusContent.body.replace(/donations/g, subject)}
     </Text>,
     {
       attach: 'right',
@@ -79,7 +86,11 @@ export default function ConnectionStatus({ refetch, isFetching }: ConnectionStat
             </Clickable>
           </Interactive>
         </Header>
-        {calloutType === 'danger' && <Button onPress={refetch}>{isFetching ? 'Loading' : 'Manual Fetch'}</Button>}
+        {calloutType !== 'success' && (
+          <Button onPress={refetch} isDisabled={isFetching}>
+            {isFetching ? 'Loading' : 'Manual Fetch'}
+          </Button>
+        )}
       </Stack>
     </Callout>
   );

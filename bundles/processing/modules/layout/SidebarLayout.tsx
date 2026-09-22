@@ -43,18 +43,19 @@ function LayoutHeader(props: LayoutHeaderProps) {
 
 interface SidebarLayoutProps {
   subtitle: string;
+  header?: React.ReactNode;
   sidebar: React.ReactNode;
   children: React.ReactNode;
   mainClassName?: string;
 }
 
 export default function SidebarLayout(props: SidebarLayoutProps) {
-  const { subtitle, sidebar, children, mainClassName } = props;
+  const { subtitle, header, sidebar, children, mainClassName } = props;
 
   return (
     <div className={styles.container}>
       <Stack className={styles.sidebar} spacing="space-xl" wrap={false}>
-        <LayoutHeader subtitle={subtitle} />
+        {header ?? <LayoutHeader subtitle={subtitle} />}
         {sidebar}
       </Stack>
       <main className={cn(styles.main, mainClassName)}>{children}</main>

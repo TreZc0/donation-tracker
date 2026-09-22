@@ -12,7 +12,7 @@
           {% if bid.chain %}({{ bid.total_steps }} steps){% endif %}
         {% endif %}
         {% if bid.children %}
-            <button id="bidOptionShow-{{ bid.id }}"
+            <button type="button" class="btn btn-default btn-xs" id="bidOptionShow-{{ bid.id }}"
                     onclick="
                             $('#bidOptionShow-{{ bid.id }}').hide();
                             $('#bidOptionHide-{{ bid.id }}').show();
@@ -20,7 +20,7 @@
                             ">
                 Show Options
             </button>
-            <button style="display:none" id="bidOptionHide-{{ bid.id }}"
+            <button type="button" class="btn btn-default btn-xs" style="display:none" id="bidOptionHide-{{ bid.id }}"
                     onclick="
                             $('#bidOptionShow-{{ bid.id }}').show();
                             $('#bidOptionHide-{{ bid.id }}').hide();

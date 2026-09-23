@@ -34,6 +34,7 @@ def constants(user=None):
         'SWEEPSTAKES_URL': settings.TRACKER_SWEEPSTAKES_URL,
         'ANALYTICS_URL': reverse('tracker:analytics'),
         'APIV2_ROOT': reverse('tracker:api_v2:api-root'),
+        'PUBLIC_ROOT': reverse('tracker:index_all'),
         'STATIC_URL': settings.STATIC_URL,
         'PAGINATION_LIMIT': settings.TRACKER_PAGINATION_LIMIT,
         'PAYPAL_MAXIMUM_AMOUNT': settings.TRACKER_PAYPAL_MAXIMUM_AMOUNT,

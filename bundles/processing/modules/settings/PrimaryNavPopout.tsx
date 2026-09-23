@@ -12,23 +12,18 @@ import { setUseRelativeTimestamps, useUserPreferencesStore } from './UserPrefere
 
 import styles from './PrimaryNavPopout.mod.css';
 
-// NOTE: These are relatively-static routes, they really aren't likely to
-// change, but they should still come from some more authoritative source,
-// or be put into one, similar to API routes are.
-//
-// These are hardcoded with `/tracker` as the root path to avoid changing
-// the structure of `CONSTANTS` that gets sent by the bundle host.
+// Public routes are relative to PUBLIC_ROOT; admin routes are relative to ROOT_PATH.
 const NavRoutes = {
-  HOME: (eventId: string | number) => `/tracker/event/${eventId}`,
-  BIDS: (eventId: string | number) => `/tracker/bids/${eventId}`,
-  DONATIONS: (eventId: string | number) => `/tracker/donations/${eventId}`,
-  DONORS: (eventId: string | number) => `/tracker/donors/${eventId}`,
-  EVENTS: `/tracker`,
-  MILESTONES: (eventId: string | number) => `/tracker/milestones/${eventId}`,
-  PRIZES: (eventId: string | number) => `/tracker/prizes/${eventId}`,
-  RUNS: (eventId: string | number) => `/tracker/runs/${eventId}`,
-  LOGOUT: `/tracker/user/logout/`,
-  SELF_SERVICE: `/tracker/user/index/`,
+  HOME: (eventId: string | number) => `event/${eventId}`,
+  BIDS: (eventId: string | number) => `bids/${eventId}`,
+  DONATIONS: (eventId: string | number) => `donations/${eventId}`,
+  DONORS: (eventId: string | number) => `donors/${eventId}`,
+  EVENTS: '',
+  MILESTONES: (eventId: string | number) => `milestones/${eventId}`,
+  PRIZES: (eventId: string | number) => `prizes/${eventId}`,
+  RUNS: (eventId: string | number) => `runs/${eventId}`,
+  LOGOUT: `user/logout/`,
+  SELF_SERVICE: `user/index/`,
 
   ADMIN_HOME: `/`,
   PROCESS_DONATIONS: (eventId: number) => `v2/${eventId}/processing/donations`,
@@ -82,7 +77,7 @@ interface PrimaryNavPopoutProps {
 
 export function PrimaryNavPopout(props: PrimaryNavPopoutProps) {
   const { eventId } = props;
-  const { SWEEPSTAKES_URL } = useConstants();
+  const { SWEEPSTAKES_URL, PUBLIC_ROOT } = useConstants();
   const hasPrizes = SWEEPSTAKES_URL !== '';
 
   return (
@@ -90,8 +85,8 @@ export function PrimaryNavPopout(props: PrimaryNavPopoutProps) {
       <Stack direction="horizontal" spacing="space-xl" justify="stretch">
         <Stack spacing="space-lg">
           <CurrentUser />
-          <Anchor href={NavRoutes.SELF_SERVICE}>Self Service</Anchor>
-          <Anchor href={NavRoutes.LOGOUT}>Logout</Anchor>
+          <Anchor href={PUBLIC_ROOT + NavRoutes.SELF_SERVICE}>Self Service</Anchor>
+          <Anchor href={PUBLIC_ROOT + NavRoutes.LOGOUT}>Logout</Anchor>
           <Spacer />
           <Header tag="h2" variant="header-md/normal">
             Settings
@@ -112,14 +107,14 @@ export function PrimaryNavPopout(props: PrimaryNavPopoutProps) {
           <Header tag="h2" variant="header-md/normal">
             Public
           </Header>
-          <Anchor href={NavRoutes.HOME(eventId)}>Home</Anchor>
-          <Anchor href={NavRoutes.RUNS(eventId)}>Runs</Anchor>
-          {hasPrizes ? <Anchor href={NavRoutes.PRIZES(eventId)}>Prizes</Anchor> : null}
-          <Anchor href={NavRoutes.BIDS(eventId)}>Bids</Anchor>
-          <Anchor href={NavRoutes.MILESTONES(eventId)}>Milestones</Anchor>
-          <Anchor href={NavRoutes.DONORS(eventId)}>Donors</Anchor>
-          <Anchor href={NavRoutes.DONATIONS(eventId)}>Donations</Anchor>
-          <Anchor href={NavRoutes.EVENTS}>All Events</Anchor>
+          <Anchor href={PUBLIC_ROOT + NavRoutes.HOME(eventId)}>Home</Anchor>
+          <Anchor href={PUBLIC_ROOT + NavRoutes.RUNS(eventId)}>Runs</Anchor>
+          {hasPrizes ? <Anchor href={PUBLIC_ROOT + NavRoutes.PRIZES(eventId)}>Prizes</Anchor> : null}
+          <Anchor href={PUBLIC_ROOT + NavRoutes.BIDS(eventId)}>Bids</Anchor>
+          <Anchor href={PUBLIC_ROOT + NavRoutes.MILESTONES(eventId)}>Milestones</Anchor>
+          <Anchor href={PUBLIC_ROOT + NavRoutes.DONORS(eventId)}>Donors</Anchor>
+          <Anchor href={PUBLIC_ROOT + NavRoutes.DONATIONS(eventId)}>Donations</Anchor>
+          <Anchor href={PUBLIC_ROOT + NavRoutes.EVENTS}>All Events</Anchor>
         </Stack>
       </Stack>
     </Card>

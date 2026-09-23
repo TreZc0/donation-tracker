@@ -6,6 +6,7 @@ export const DefaultConstants = {
   ANALYTICS_URL: '',
   APIV2_ROOT: '',
   ADMIN_ROOT: '',
+  PUBLIC_ROOT: '',
   STATIC_URL: '/static/',
   PAGINATION_LIMIT: 0,
   PAYPAL_MAXIMUM_AMOUNT: 0,

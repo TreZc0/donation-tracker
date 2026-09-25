@@ -150,6 +150,14 @@ function Internal({ event }: { event: Event }) {
       })),
     [],
   );
+  const editBid = React.useCallback(
+    (original: DonationPostBid, replacement: DonationPostBid) =>
+      setDonation(donation => ({
+        ...donation,
+        bids: donation.bids.map(bid => (bid === original ? replacement : bid)),
+      })),
+    [],
+  );
 
   if (!event.allow_donations) {
     return (
@@ -286,6 +294,7 @@ function Internal({ event }: { event: Event }) {
               bids={bids}
               addBid={addBid}
               deleteBid={deleteBid}
+              editBid={editBid}
             />
           </section>
         )

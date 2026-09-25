@@ -16,6 +16,7 @@ import TextInput from '@uikit/TextInput';
 
 import { DonationFormEntry } from '@tracker/donation/validateDonation';
 
+import remainingAmount from '../remainingAmount';
 import validateBid from '../validateBid';
 
 import styles from './DonationBidForm.mod.css';
@@ -26,32 +27,33 @@ type DonationBidFormProps = {
   donation: DonationFormEntry;
   className?: cn.Argument;
   onSubmit: (bid: DonationPostBid) => void;
+  initialBid?: DonationPostBid;
+  onCancel: () => void;
 };
 
 const DonationBidForm = (props: DonationBidFormProps) => {
-  const { bids, incentiveId, className, onSubmit, donation } = props;
+  const { bids, incentiveId, className, onSubmit, donation, initialBid, onCancel } = props;
   const { data } = useEventFromRoute();
   const event = data!;
 
   const eventCurrency = useEventCurrency();
 
-  const allocatedTotal = donation.bids.reduce((total, bid) => total + bid.amount, 0);
-  const remainingDonationTotal = donation.amount != null ? donation.amount - allocatedTotal : 0;
+  const availableDonation = React.useMemo(
+    () => ({ ...donation, bids: donation.bids.filter(bid => bid !== initialBid) }),
+    [donation, initialBid],
+  );
+  const remainingDonationTotal = Math.max(0, remainingAmount(availableDonation));
   const remainingDonationTotalString = eventCurrency(remainingDonationTotal);
 
-  const [allocatedAmount, setAllocatedAmount] = React.useState(remainingDonationTotal);
-  const [selectedChoiceId, setSelectedChoiceId] = React.useState<number | null>(null);
-  const [customOptionSelected, setCustomOptionSelected] = React.useState(false);
-  const [customOption, setCustomOption] = React.useState('');
+  const [allocatedAmount, setAllocatedAmount] = React.useState(initialBid?.amount ?? remainingDonationTotal);
+  const [selectedChoiceId, setSelectedChoiceId] = React.useState<number | null>(
+    initialBid && 'id' in initialBid ? initialBid.id : null,
+  );
+  const [customOptionSelected, setCustomOptionSelected] = React.useState(initialBid != null && 'name' in initialBid);
+  const [customOption, setCustomOption] = React.useState(initialBid && 'name' in initialBid ? initialBid.name : '');
 
   const incentive = bids.find(b => b.id === incentiveId)!;
   const option = incentive.options?.find(o => o.id === selectedChoiceId) ?? null;
-
-  React.useEffect(() => {
-    if (allocatedAmount > remainingDonationTotal) {
-      setAllocatedAmount(remainingDonationTotal);
-    }
-  }, [allocatedAmount, remainingDonationTotal]);
 
   const currentBid = React.useMemo((): DonationPostBid | null => {
     return incentive.options == null || customOptionSelected || selectedChoiceId != null
@@ -65,8 +67,8 @@ const DonationBidForm = (props: DonationBidFormProps) => {
   }, [allocatedAmount, customOption, customOptionSelected, incentive.options, incentiveId, selectedChoiceId]);
 
   const bidValidation = React.useMemo(
-    () => (currentBid ? validateBid(event.paypalcurrency, currentBid, incentive, donation, option) : null),
-    [event.paypalcurrency, currentBid, incentive, donation, option],
+    () => (currentBid ? validateBid(event.paypalcurrency, currentBid, incentive, availableDonation, option) : null),
+    [event.paypalcurrency, currentBid, incentive, availableDonation, option],
   );
 
   const handleNewChoice = useCachedCallback(choiceId => {
@@ -75,10 +77,10 @@ const DonationBidForm = (props: DonationBidFormProps) => {
   }, []);
 
   const handleSubmitBid = React.useCallback(() => {
-    if (currentBid) {
+    if (currentBid && bidValidation == null) {
       onSubmit(currentBid);
     }
-  }, [onSubmit, currentBid]);
+  }, [onSubmit, currentBid, bidValidation]);
 
   const fullGoal = incentive?.goal != null ? incentive.goal + (incentive.chain_remaining ?? 0) : 0;
   const header = incentive.full_name.includes(' -- ')
@@ -122,18 +124,19 @@ const DonationBidForm = (props: DonationBidFormProps) => {
         ))}
 
       <CurrencyInput
-        value={Math.min(allocatedAmount, remainingDonationTotal)}
+        value={allocatedAmount}
         name="incentiveBidAmount"
         label="Amount to put towards incentive"
         currency={event.paypalcurrency}
         hint={
           <React.Fragment>
-            You have <strong>{remainingDonationTotalString}</strong> remaining.
+            You have <strong>{remainingDonationTotalString}</strong> available for this incentive.
           </React.Fragment>
         }
         onChange={setAllocatedAmount}
         min={0}
-        max={remainingDonationTotal}
+        // Validate the balance below: a changing input maximum can crash ReactNumeric
+        // while the donation total is being edited. Keep the draft amount intact.
       />
 
       {incentive.options?.toSorted(compareBidChild).map(option => (
@@ -172,11 +175,14 @@ const DonationBidForm = (props: DonationBidFormProps) => {
       <ErrorAlert errors={bidValidation} />
 
       <Button
-        disabled={bidValidation != null}
+        disabled={currentBid == null || bidValidation != null}
         fullwidth
         onClick={handleSubmitBid}
         data-testid="incentiveBidForm-submitBid">
-        Add
+        {initialBid ? 'Save Changes' : 'Add'}
+      </Button>
+      <Button look={Button.Looks.OUTLINED} fullwidth onClick={onCancel}>
+        Cancel
       </Button>
     </div>
   );

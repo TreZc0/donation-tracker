@@ -1,9 +1,10 @@
 import { BidChild, DonationPostBid, TreeBid } from '@public/apiv2/APITypes';
 import { APIError } from '@public/apiv2/reducers/trackerBaseApi';
 import * as CurrencyUtils from '@public/util/currency';
-import { sum } from '@public/util/reduce';
 
 import { DonationFormEntry } from '@tracker/donation/validateDonation';
+
+import remainingAmount from './remainingAmount';
 
 export const BidErrors = {
   NO_INCENTIVE: 'Bid must go towards an incentive',
@@ -29,8 +30,7 @@ export default function validateBid(
   donation: DonationFormEntry,
   option: BidChild | null,
 ): APIError | null {
-  const preAllocatedTotal = donation.bids.map(b => b.amount).reduce(sum, 0);
-  const remainingTotal = (donation.amount ?? 0) - preAllocatedTotal;
+  const remainingTotal = remainingAmount(donation);
 
   const errors: Record<string, string> = {};
 

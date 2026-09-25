@@ -4,7 +4,8 @@ import { DonationPost } from '@public/apiv2/APITypes';
 import { Event } from '@public/apiv2/Models';
 import { APIError } from '@public/apiv2/reducers/trackerBaseApi';
 import * as CurrencyUtils from '@public/util/currency';
-import { sum } from '@public/util/reduce';
+
+import remainingAmount from './remainingAmount';
 
 export const DonationErrors = {
   NO_AMOUNT: 'Donation amount is not set',
@@ -40,7 +41,6 @@ function sortBid(a: DonationFormEntry['bids'][0], b: DonationFormEntry['bids'][0
 export type DonationFormEntry = Omit<DonationPost, 'amount' | 'event'> & { amount?: number };
 
 export default function validateDonation(event: Event, donation: DonationFormEntry, maximum: number): APIError | null {
-  const sumOfBids = donation.bids.map(b => b.amount).reduce(sum, 0);
   const errors: Record<string, string> = {};
 
   const bids = donation.bids.toSorted(sortBid);
@@ -65,7 +65,7 @@ export default function validateDonation(event: Event, donation: DonationFormEnt
     errors['amount'] = DonationErrors.AMOUNT_MAXIMUM(maximum, event.paypalcurrency);
   }
 
-  if (donation.amount != null && sumOfBids > donation.amount) {
+  if (donation.amount != null && remainingAmount(donation) < 0) {
     errors['bids'] = DonationErrors.BID_SUM_EXCEEDS_TOTAL;
   }
 

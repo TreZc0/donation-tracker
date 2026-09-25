@@ -51,7 +51,10 @@
 {% endfor %}
 
 <br/>
-<a href="{% url 'tracker:logout' %}">Log Out</a>
+<form method="post" action="{% url 'tracker:logout' %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-link">Log Out</button>
+</form>
 <br/>
 
 {% endblock %}

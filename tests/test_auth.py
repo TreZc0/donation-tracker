@@ -4,7 +4,7 @@ import post_office.models
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.contrib.sites.shortcuts import get_current_site
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import Client, RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -15,6 +15,28 @@ from . import util
 from .util import MigrationsTestCase
 
 AuthUser = get_user_model()
+
+
+class TestLogout(TestCase):
+    def test_logout_forms_post_with_csrf_token(self):
+        user = AuthUser.objects.create_user(username='logout-user', password='password')
+        self.client = Client(enforce_csrf_checks=True)
+        self.client.force_login(user)
+        logout_url = reverse('tracker:logout')
+
+        for page in ('tracker:index_all', 'tracker:user_index'):
+            response = self.client.get(reverse(page))
+            self.assertContains(
+                response, f'<form method="post" action="{logout_url}">'
+            )
+            self.assertContains(response, 'name="csrfmiddlewaretoken"')
+
+        response = self.client.post(
+            logout_url,
+            {'csrfmiddlewaretoken': self.client.cookies['csrftoken'].value},
+        )
+        self.assertRedirects(response, reverse('tracker:login'))
+        self.assertNotIn('_auth_user_id', self.client.session)
 
 
 @override_settings(TRACKER_REGISTRATION_FROM_EMAIL='example@example.com')

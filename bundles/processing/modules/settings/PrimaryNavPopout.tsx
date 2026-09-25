@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { Anchor, Button, Card, FormSwitch, Header, Spacer, Stack, Text, usePopout } from '@faulty/gdq-design';
 
 import { useConstants } from '@common/Constants';
-import { useEventParam, useMeQuery } from '@public/apiv2/hooks';
+import { useCSRFToken, useEventParam, useMeQuery } from '@public/apiv2/hooks';
 import Bars from '@uikit/icons/Bars';
 
 import { ThemeButton } from '@processing/modules/theming/Theming';
@@ -78,6 +78,7 @@ interface PrimaryNavPopoutProps {
 export function PrimaryNavPopout(props: PrimaryNavPopoutProps) {
   const { eventId } = props;
   const { SWEEPSTAKES_URL, PUBLIC_ROOT } = useConstants();
+  const csrfToken = useCSRFToken();
   const hasPrizes = SWEEPSTAKES_URL !== '';
 
   return (
@@ -86,7 +87,12 @@ export function PrimaryNavPopout(props: PrimaryNavPopoutProps) {
         <Stack spacing="space-lg">
           <CurrentUser />
           <Anchor href={PUBLIC_ROOT + NavRoutes.SELF_SERVICE}>Self Service</Anchor>
-          <Anchor href={PUBLIC_ROOT + NavRoutes.LOGOUT}>Logout</Anchor>
+          <form method="post" action={PUBLIC_ROOT + NavRoutes.LOGOUT}>
+            <input type="hidden" name="csrfmiddlewaretoken" value={csrfToken} />
+            <button type="submit" className={styles.logoutButton}>
+              Logout
+            </button>
+          </form>
           <Spacer />
           <Header tag="h2" variant="header-md/normal">
             Settings

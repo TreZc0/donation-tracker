@@ -31,7 +31,12 @@ describe('PrimaryNavPopout', () => {
   });
 
   for (const publicRoot of ['/', '/tracker/', '/marathon/tracker/']) {
-    it(`uses ${publicRoot} for public and self service links`, async () => {
+    it(`uses ${publicRoot} for public links and the logout form`, async () => {
+      const csrfInput = document.createElement('input');
+      csrfInput.name = 'csrfmiddlewaretoken';
+      csrfInput.value = 'test-csrf-token';
+      document.body.appendChild(csrfInput);
+
       const subject = render(
         <Provider store={store}>
           <Constants.Provider
@@ -59,14 +64,21 @@ describe('PrimaryNavPopout', () => {
         Donations: 'donations/3',
         'All Events': '',
         'Self Service': 'user/index/',
-        Logout: 'user/logout/',
       };
       for (const [name, path] of Object.entries(links)) {
         expect(subject.getByRole('link', { name }).getAttribute('href')).toBe(publicRoot + path);
       }
+      const logoutButton = subject.getByRole('button', { name: 'Logout' });
+      const logoutForm = logoutButton.closest('form');
+      expect(logoutForm?.getAttribute('action')).toBe(publicRoot + 'user/logout/');
+      expect(logoutForm?.getAttribute('method')).toBe('post');
+      expect(logoutForm?.querySelector<HTMLInputElement>('input[name=csrfmiddlewaretoken]')?.value).toBe(
+        'test-csrf-token',
+      );
       expect(subject.getByRole('link', { name: 'Process Donations' }).getAttribute('href')).toBe(
         '/admin/tracker/event/ui/v2/3/processing/donations',
       );
+      csrfInput.remove();
     });
   }
 });

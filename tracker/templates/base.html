@@ -103,7 +103,12 @@
 
           {% if user and user.is_authenticated %}
             <li><a href="{% url 'tracker:user_index' %}">{% trans "Self Service" %}</a></li>
-            <li><a href="{% url 'tracker:logout' %}">{% trans "Log Out" %}</a></li>
+            <li>
+              <form method="post" action="{% url 'tracker:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="navbar-logout">{% trans "Log Out" %}</button>
+              </form>
+            </li>
           {% endif %}
         </ul>
       </div>

@@ -25,6 +25,8 @@ import { useNow } from '@public/hooks/useNow';
 import Spinner from '@public/spinner';
 import { sum } from '@public/util/reduce';
 
+import styles from './totalWatch.mod.css';
+
 const intervals = [5, 15, 30, 60, 180];
 
 type IntervalData = {
@@ -180,17 +182,22 @@ export default React.memo(function TotalWatch() {
         <label>
           Time Override
           <input
+            className={styles.control}
             style={{ opacity: fakeNow ? 1 : 0.5 }}
             type="datetime-local"
             value={toInputTime(fakeNow || now)}
             onChange={e => setFakeNow(e.target.value)}
           />
-          <button className={cn('fa', 'fa-times')} onClick={() => setFakeNow(null)} />
+          <button
+            className={cn(styles.control, 'fa', 'fa-times')}
+            aria-label="Clear time override"
+            onClick={() => setFakeNow(null)}
+          />
         </label>
       </div>
       <div>
         <label>
-          <select value={feed} onChange={e => setFeed(e.target.value as BidFeed)}>
+          <select className={styles.control} value={feed} onChange={e => setFeed(e.target.value as BidFeed)}>
             <option value="current">Current</option>
             <option value="open">Open</option>
             <option value="public">{canViewBids ? 'Public' : 'All'}</option>
@@ -200,7 +207,9 @@ export default React.memo(function TotalWatch() {
         </label>
       </div>
       <div>
-        <button onClick={refresh}>Refresh</button>
+        <button className={styles.control} onClick={refresh}>
+          Refresh
+        </button>
       </div>
       <Spinner
         spinning={

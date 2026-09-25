@@ -20,7 +20,14 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def paypal_cancel(request):
-    return views_common.tracker_response(request, 'tracker/paypal_cancel.html')
+    event = models.Event.objects.filter(short=request.GET.get('event')).first()
+    context = {'donation_url': reverse('tracker:donate_current')}
+    if event:
+        context.update(
+            event=event,
+            donation_url=reverse('tracker:ui:donate', args=(event.id,)),
+        )
+    return views_common.tracker_response(request, 'tracker/paypal_cancel.html', context)
 
 
 @csrf_exempt

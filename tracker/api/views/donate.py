@@ -409,7 +409,9 @@ class DonateViewSet(GenericViewSet):
                 'notify_url': request.build_absolute_uri(reverse('tracker:paypal-ipn')),
                 'return': request.build_absolute_uri(reverse('tracker:paypal_return')),
                 'cancel_return': request.build_absolute_uri(
-                    reverse('tracker:paypal_cancel')
+                    reverse(
+                        'tracker:paypal_cancel', query={'event': donation.event.short}
+                    )
                 ),
                 'custom': custom,
                 'currency_code': donation.event.paypalcurrency,
